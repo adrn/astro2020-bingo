@@ -63,7 +63,8 @@
   <body>
     <div id="main">
       <div id="title">Astro 2020 Webinar Bingo</div>
-      <div id="hardlink-container">Your bingo card is persistent <a href="" id="hardlink">at this link</a>.</div>
+      <div id="hardlink-container">Your bingo card is persistent <a href="" id="hardlink">at this link</a>.<br/>
+        Get a new card <a href="https://adrian.pw/astro2020-bingo">here</a>.</div>
       <div id="table-container"></div>
     </div>
 
@@ -113,16 +114,14 @@
           var seed = params.get('seed');
           if (seed == null) {
             seed = Math.floor(64 * Math.random());
+            window.location.href = window.location.href + "?seed=" + seed;
           }
-          var url = "https://adrian.pw/astro2020-bingo?seed=" + seed;
-          $('#hardlink').attr("href", url);
+          $('#hardlink').attr("href", window.location.href);
 
           var rng = new Math.seedrandom(seed);
 
           // https://stackoverflow.com/a/51924696/623453
           data.sort(() => rng() - 0.5);
-
-          console.log(data);
 
           var data2d = [];
           for (let i=0; i < 5; i++) {
