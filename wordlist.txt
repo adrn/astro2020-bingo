@@ -34,3 +34,6 @@ MMA
 software
 synergy
 complementary
+vision
+community
+LIGO
