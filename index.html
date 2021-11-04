@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Astro2020 Bingo</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"/>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+    <script
+      src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"
+      ></script>
+
+    <style>
+      html,
+      body {
+        width: 100%;
+      }
+      #main {
+        width: 100%;
+        text-align: center;
+        margin: 50px 0;
+      }
+      #title {
+        font-size: 200%;
+      }
+      #table-container {
+        width: 100%;
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+      }
+
+      .bingo-table, td {
+        border: 1px solid black;
+      }
+      .bingo-table tr td {
+        width: 20%;
+        min-width: 128px;
+        height: 100px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div id="title">Astro 2020 Webinar Bingo</div>
+      <div id="hardlink-container">Your bingo card is persistent <a href="" id="hardlink">at this link</a>.</div>
+      <div id="table-container"></div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">
+            This is an <a href="https://github.com/adrn/astro2020-bingo">open source</a> website by <a href="https://github.com/adrn">adrn</a>.
+        </span>
+      </div>
+    </footer>
+
+    <script type="text/javascript">
+
+      // StackOverflow solution!
+      function generateHtmlTable(data) {
+        // var html = '<table class="table table-condensed table-hover table-striped">';
+        var html = '<table class="bingo-table">';
+
+        if(typeof(data[0]) === 'undefined') {
+          return null;
+        } else {
+          $.each(data, function( index, row ) {
+            //bind header
+            html += '<tr>';
+            $.each(row, function( index, colData ) {
+              html += '<td>';
+              html += colData;
+              html += '</td>';
+            });
+            html += '</tr>';
+          });
+          html += '</tbody>';
+          html += '</table>';
+
+          $('#table-container').append(html);
+          }
+      }
+
+      $.ajax({
+        type: "GET",
+        url: "wordlist.txt",
+        dataType: "text",
+        success: function(response) {
+          var data = response.split("\n");
+
+          var params = new window.URLSearchParams(window.location.search);
+          var seed = params.get('seed');
+          if (seed == null) {
+            seed = Math.floor(64 * Math.random());
+          }
+          var url = "https://adrn.github.io/astro2020-bingo?seed=" + seed;
+          $('#hardlink').attr("href", url);
+
+          var rng = new Math.seedrandom(seed);
+
+          // https://stackoverflow.com/a/51924696/623453
+          data.sort(() => rng() - 0.5);
+
+          console.log(data);
+
+          var data2d = [];
+          for (let i=0; i < 5; i++) {
+            var row = [];
+            for (let j=0; j < 5; j++) {
+              if (i==2 && j==2)
+                row.push("Free");
+              else
+                row.push(data[j + i*5]);
+            }
+            data2d.push(row);
+          }
+          console.log(data2d);
+
+          generateHtmlTable(data2d);
+        }
+      });
+    </script>
+  </body>
+</html>
